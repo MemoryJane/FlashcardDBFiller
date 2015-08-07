@@ -21,7 +21,7 @@ var PutArrayOfAnswers = function (qArray, aArray, index, prompt) {
 
     // If the prompt is empty, then we don't include it at all. Otherwise, we add it here.
     if (prompt != "") {
-        QuestionToAdd.Item.Prompt = prompt;
+        QuestionToAdd.Item.Prompt = {"S": prompt};
         console.log("PROMPT NOT EMPTY");
     }
 
