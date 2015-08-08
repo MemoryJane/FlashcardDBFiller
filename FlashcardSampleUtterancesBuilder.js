@@ -39,10 +39,10 @@ rl.question("Local or AWS DB? ", function(localOrRemote) {
             console.log("_scan ERROR " + err);
         } else {
             var answerCount = data.Count;
-            var stringToOutput = "\n";
+            var stringToOutput = "";
 
             for (i = 0; i < answerCount; i++) {
-                stringToOutput += "MemoryJaneQuestionIntent { "+data.Items[i].Answer.S.trim()+" | Answer }\n";
+                stringToOutput += "MemoryJaneQuestionIntent {"+data.Items[i].Answer.S.trim()+"|Answer}\n";
             }
 
             var dateString = new Date().toLocaleString().replace(/[, :/]+/g, "").trim();

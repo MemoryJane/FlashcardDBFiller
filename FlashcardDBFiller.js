@@ -27,17 +27,20 @@ var PutArrayOfAnswers = function (qArray, aArray, index, prompt) {
 
     // Put the question into the DB.
     dynamodb.putItem(QuestionToAdd, function (err, data) {
-        if (err) console.log(err); // an error occurred
-
-        // If there are still questions left, call this again, otherwise, we're done.
-        if (qArray.length > 1) {
-            // Splice pops one item off each array.
-            qArray.splice(0,1);
-            aArray.splice(0,1);
-
-            PutArrayOfAnswers(qArray, aArray, index+1, prompt);
+        if (err) { console.log(err);
         } else {
-            process.exit(0);
+            console.log("Added "+qArray[0].trim()+". Remaining count: "+qArray.length-1);
+
+            // If there are still questions left, call this again, otherwise, we're done.
+            if (qArray.length > 1) {
+                // Splice pops one item off each array.
+                qArray.splice(0,1);
+                aArray.splice(0,1);
+
+                PutArrayOfAnswers(qArray, aArray, index+1, prompt);
+            } else {
+                process.exit(0);
+            }
         }
     });
 };
@@ -63,24 +66,42 @@ rl.question("Local or AWS DB? ", function(localOrRemote) {
         else {
             // Second question: what's the prompt code?
             rl.question("What's your prompt code? (Enter for none.) ", function(prompt) {
+                    if (prompt == "Spelling") {
+                        console.log("You said Spelling, so we won't ask for any answers.");
+                    }
+
                     // Third question, what your questions?
                     rl.question("What's your question values? (Comma separated.) ", function(questions) {
                             var questionArray = questions.split(",");
 
-                            // Fourth and final question, what are the answers?
-                            rl.question("Now tell me " + questionArray.length + " answers to match. (Also comma separated.) ", function(answers) {
-                                    var answerArray = answers.split(",");
-
-                                    // If the two arrays are not the szme size, then there's been a mistake.
-                                    if (questionArray.length != answerArray.length) {
-                                        console.log("ERROR - You gave me "+questionArray.length
-                                            +" questions and "+answerArray.length+" answers. Please try again.");
-                                        process.exit(0);
+                            // If this is spelling, we don't need the answers, we can generate them.
+                            if (prompt == "Spelling") {
+                                var answerArray = questionArray.slice(0);
+                                for (i = 0; i < answerArray.length; i++) {
+                                    if (questionArray[i].indexOf("'") >= 0) {
+                                        questionArray.splice(i,1);
+                                        answerArray.splice(i,1);
+                                    } else {
+                                        answerArray[i] = answerArray[i].split("").join(". ") + ".";
                                     }
-
-                                    PutArrayOfAnswers(questionArray, answerArray, data.Count+1, prompt)
                                 }
-                            );
+                                PutArrayOfAnswers(questionArray, answerArray, data.Count+1, prompt)
+                            } else {
+                                // Otherwise, fourth and final question, what are the answers?
+                                rl.question("Now tell me " + questionArray.length + " answers to match. (Also comma separated.) ", function(answers) {
+                                        var answerArray = answers.split(",");
+
+                                        // If the two arrays are not the szme size, then there's been a mistake.
+                                        if (questionArray.length != answerArray.length) {
+                                            console.log("ERROR - You gave me "+questionArray.length
+                                                +" questions and "+answerArray.length+" answers. Please try again.");
+                                            process.exit(0);
+                                        }
+
+                                        PutArrayOfAnswers(questionArray, answerArray, data.Count+1, prompt)
+                                    }
+                                );
+                            }
                         }
                     );
                 }
