@@ -22,14 +22,13 @@ var PutArrayOfAnswers = function (qArray, aArray, index, prompt) {
     // If the prompt is empty, then we don't include it at all. Otherwise, we add it here.
     if (prompt != "") {
         QuestionToAdd.Item.Prompt = {"S": prompt};
-        console.log("PROMPT NOT EMPTY");
     }
 
     // Put the question into the DB.
     dynamodb.putItem(QuestionToAdd, function (err, data) {
         if (err) { console.log(err);
         } else {
-            console.log("Added "+qArray[0].trim()+". Remaining count: "+qArray.length-1);
+            console.log("Added "+qArray[0].trim()+". Remaining count: "+String(qArray.length-1));
 
             // If there are still questions left, call this again, otherwise, we're done.
             if (qArray.length > 1) {
