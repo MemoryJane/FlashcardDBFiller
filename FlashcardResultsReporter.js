@@ -22,6 +22,11 @@ rl.question("Local or AWS DB? ", function(localOrRemote) {
         console.log("Using AWS ");
     }
 
+    var rightNow = new Date();
+    var dateToday = Number(rightNow.getUTCFullYear())
+        +((rightNow.getUTCMonth()+1)*10000)
+        +((rightNow.getUTCDate()+1)*1000000);
+
     // Get the latest item from the results DB.
     var latestItemParams = {
         TableName: 'MemoryJaneQueryResults',
@@ -30,7 +35,7 @@ rl.question("Local or AWS DB? ", function(localOrRemote) {
             '#hashkey': 'Date',
         },
         ExpressionAttributeValues: {
-            ':hk_val': { "N": Date().split(' ').splice(2,2).join("") },
+            ':hk_val': { "N": dateToday.toString() },
         },
         ScanIndexForward: false,
         Limit: 1,
@@ -52,8 +57,8 @@ rl.question("Local or AWS DB? ", function(localOrRemote) {
                     '#hashkey': 'Date',
                 },
                 ExpressionAttributeValues: {
-                    ':hk_val': { "N": Date().split(' ').splice(2,2).join("") },
-                    ':sess_val': { "S": 'ID2' }
+                    ':hk_val': { "N": dateToday.toString() },
+                    ':sess_val': { "S": sessionID }
                 },
                 ScanIndexForward: false,
                 FilterExpression: 'SessionID = :sess_val',
