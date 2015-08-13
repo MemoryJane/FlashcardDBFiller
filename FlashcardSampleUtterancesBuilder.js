@@ -22,10 +22,6 @@ rl.question("Local or AWS DB? ", function(localOrRemote) {
         console.log("Using AWS ");
     }
 
-    // Scan the answers in the db
-
-
-
     // Get the number of questions in the table by doing a COUNT scan.
     var countParams = {
         TableName: 'MemoryJaneFlashCards',
